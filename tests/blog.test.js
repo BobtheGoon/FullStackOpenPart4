@@ -20,3 +20,27 @@ describe('total likes', () => {
         expect(result).toBe(36);
     });
 });
+
+describe('most liked', () => {
+    test('when list has only one blog, it is the most liked', () => {
+        const result = listHelper.favoriteBlog(listWithOneBlog);
+        expect(result).toEqual(
+            {
+                title: 'Go To Statement Considered Harmful',
+                author: 'Edsger W. Dijkstra',
+                likes: 5
+            }
+        );
+    });
+
+    test('when list has multiple blogs', () => {
+        const result = listHelper.favoriteBlog(listWithManyBlogs);
+        expect(result).toEqual(
+            {
+                title: 'Canonical string reduction',
+                author: 'Edsger W. Dijkstra',
+                likes: 12
+            }
+        );
+    });
+});
