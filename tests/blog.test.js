@@ -44,6 +44,13 @@ describe('root path API calls', () => {
         const response = await api.get('/api/blogs');
         expect(response.body).toHaveLength(3);
     });
+
+    //Part 4.9
+    // test('blog _id is transformed to id', async () => {
+    //     const response = await api.get('/api/blogs');
+    //     console.log(response.body[0]);
+    //     expect('_id').toBeDefined();
+    // });
     
     test('a new blog can be posted', async() => {
         const newBlog = {
@@ -64,6 +71,18 @@ describe('root path API calls', () => {
 
         expect(response.body).toHaveLength(initialBlogs.length + 1);
         expect(titles).toContain('Testing posting to a bad blog website, an exercise in futility');
+    });
+});
+
+describe('deleting posts', () => {
+    test('remove last blog in posts', async () => {
+        const response = await api.get('/api/blogs');
+        const finalBlog = response.body[response.body.length -1];
+        console.log(finalBlog);
+
+        await api
+            .delete(`/api/blogs/${finalBlog._id}`)
+            .expect(204);
     });
 });
 
