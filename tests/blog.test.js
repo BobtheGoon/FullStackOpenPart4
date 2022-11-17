@@ -78,8 +78,8 @@ describe('deleting posts', () => {
     test('remove last blog in posts', async () => {
         const response = await api.get('/api/blogs');
         const finalBlog = response.body[response.body.length -1];
-        console.log(finalBlog);
 
+        //${finalBlog._id} needs to be changed to finalblog.id when mongoose is fixed
         await api
             .delete(`/api/blogs/${finalBlog._id}`)
             .expect(204);
