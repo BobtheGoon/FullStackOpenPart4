@@ -27,31 +27,19 @@ const initialBlogs = [
 
 beforeEach(async () => {
     await Blog.deleteMany({});
-    let blogObject = new Blog(initialBlogs[0]);
-    await blogObject.save();
-    blogObject = new Blog(initialBlogs[1]);
-    await blogObject.save();
-    blogObject = new Blog(initialBlogs[2]);
-    await blogObject.save();
+    await Blog.insertMany(initialBlogs)
 });
 
-// const listHelper = require('../utils/list_helper');
-// const {listWithOneBlog, listWithManyBlogs}= require('./testBlogs');
 
 //Test for API
 describe('root path API calls', () => {
+    
     test('there are 3 blogs currently', async () => {
         const response = await api.get('/api/blogs');
         expect(response.body).toHaveLength(3);
     });
-
-    //Part 4.9
-    // test('blog _id is transformed to id', async () => {
-    //     const response = await api.get('/api/blogs');
-    //     console.log(response.body[0]);
-    //     expect('_id').toBeDefined();
-    // });
     
+
     test('a new blog can be posted', async() => {
         const newBlog = {
             title: 'Testing posting to a bad blog website, an exercise in futility',
@@ -74,6 +62,7 @@ describe('root path API calls', () => {
     });
 });
 
+
 describe('deleting posts', () => {
     test('remove last blog in posts', async () => {
         const response = await api.get('/api/blogs');
@@ -86,49 +75,24 @@ describe('deleting posts', () => {
     });
 });
 
-//Tests for local blogs
-// test('dummy returns one', () => {
-//     const blogs = [];
+describe('updating a post', () => {
+    test('update first blogs author', async () => {
+        const blogs = await api.get('/api/blogs');
+        const firstBlogId = blogs.body[0]._id
+        const newTitle = {title: 'This is an updated title'};
 
-//     const result = listHelper.dummy(blogs);
-//     expect(result).toBe(1);
-// });
 
-// describe('total likes', () => {
-//     test('when list has only one blog equals the likes of that', () => {
-//         const result = listHelper.totalLikes(listWithOneBlog);
-//         expect(result).toBe(5);
-//     });
-    
-//     test('when list has multiple blogs equals the likes of all of them', () => {
-//         const result = listHelper.totalLikes(listWithManyBlogs);
-//         expect(result).toBe(36);
-//     });
-// });
+        await api
+            .put(`/api/blogs/${firstBlogId}`)
+            .send(newTitle)
+            .expect(200)
 
-// describe('most liked', () => {
-//     test('when list has only one blog, it is the most liked', () => {
-//         const result = listHelper.favoriteBlog(listWithOneBlog);
-//         expect(result).toEqual(
-//             {
-//                 title: 'Go To Statement Considered Harmful',
-//                 author: 'Edsger W. Dijkstra',
-//                 likes: 5
-//             }
-//         );
-//     });
+        const response = await api.get('/api/blogs');
+        const title = response.body[0].title;
+        expect(title === 'This is an updated title');
+    });
+});
 
-//     test('when list has multiple blogs', () => {
-//         const result = listHelper.favoriteBlog(listWithManyBlogs);
-//         expect(result).toEqual(
-//             {
-//                 title: 'Canonical string reduction',
-//                 author: 'Edsger W. Dijkstra',
-//                 likes: 12
-//             }
-//         );
-//     });
-// });
 
 afterAll(() => {
     mongoose.connection.close();
