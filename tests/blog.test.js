@@ -3,31 +3,12 @@ const supertest = require('supertest');
 const app = require('../app');
 const api =supertest(app);
 const Blog = require('../models/blog');
+const helper = require('./test_helper');
 
-const initialBlogs = [
-    {
-        title: 'All your computers are belong to us',
-        author: 'Martin Memer',
-        url: 'www.evil.com',
-        likes: 3
-    },
-    {
-        title: 'How to become a FullStackBob',
-        author: 'Bobrosky Ross',
-        url: 'www.twitch.com/bobross',
-        likes: 18
-    },
-    {
-        title: 'Crime dont pay, deving does',
-        author: 'FullStacks Bob',
-        url: 'www.howtomakemoney.com',
-        likes:1
-    },
-];
 
 beforeEach(async () => {
     await Blog.deleteMany({});
-    await Blog.insertMany(initialBlogs)
+    await Blog.insertMany(helper.initialBlogs)
 });
 
 
@@ -54,10 +35,10 @@ describe('root path API calls', () => {
             .expect(201)
             .expect('Content-Type', /application\/json/);
 
-        const response = await api.get('/api/blogs');
-        const titles = response.body.map(r => r.title);
+        const blogs = await helper.blogsInDb();
+        const titles = blogs.map(blog => blog.title);
 
-        expect(response.body).toHaveLength(initialBlogs.length + 1);
+        expect(blogs).toHaveLength(helper.initialBlogs.length + 1);
         expect(titles).toContain('Testing posting to a bad blog website, an exercise in futility');
     });
 });
@@ -68,12 +49,12 @@ describe('deleting posts', () => {
         const response = await api.get('/api/blogs');
         const finalBlog = response.body[response.body.length -1];
 
-        //${finalBlog._id} needs to be changed to finalblog.id when mongoose is fixed
         await api
             .delete(`/api/blogs/${finalBlog._id}`)
             .expect(204);
     });
 });
+
 
 describe('updating a post', () => {
     test('update first blogs author', async () => {
@@ -87,8 +68,8 @@ describe('updating a post', () => {
             .send(newTitle)
             .expect(200)
 
-        const response = await api.get('/api/blogs');
-        const title = response.body[0].title;
+        const newBlogs = await helper.blogsInDb();
+        const title = newBlogs[0].title;
         expect(title === 'This is an updated title');
     });
 });
