@@ -40,7 +40,7 @@ const initialUsers = [
     },
   ];
 
-  
+
 const usersInDb = async () => {
 	users = await User.find({});
 	return users.map(user => user.toJSON());

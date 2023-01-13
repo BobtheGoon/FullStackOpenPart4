@@ -5,10 +5,12 @@ const api =supertest(app);
 const User = require('../models/user');
 const helper = require('./test_helper.js')
 
+
 beforeEach(async () => {
     await User.deleteMany({});
     await User.insertMany(helper.initialUsers)
 });
+
 
 describe('Getting users', () => {
     test('There are 3 initial users', async () => {
@@ -16,6 +18,7 @@ describe('Getting users', () => {
         expect(response.body).toHaveLength(3);
     });
 });
+
 
 describe('Adding users', () => {
     test('New user can be added', async () => {
@@ -39,6 +42,7 @@ describe('Adding users', () => {
         expect(names).toContain('Test McTested');
     });
 
+
     test('Invalid user or password cannot be added', async () => {
         invalidUser = {
             username: 'T2',
@@ -55,6 +59,7 @@ describe('Adding users', () => {
         expect(result.body.error).toContain('username or password not long enough')
     });
 });
+
 
 afterAll(() => {
     mongoose.connection.close();
