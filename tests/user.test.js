@@ -4,11 +4,12 @@ const app = require('../app');
 const api =supertest(app);
 const User = require('../models/user');
 const helper = require('./test_helper.js')
+const bcrypt = require('bcrypt');
 
 
 beforeEach(async () => {
     await User.deleteMany({});
-    await User.insertMany(helper.initialUsers)
+    await User.insertMany(await helper.initialUsers())
 });
 
 
@@ -22,6 +23,8 @@ describe('Getting users', () => {
 
 describe('Adding users', () => {
     test('New user can be added', async () => {
+        initialUsers = await helper.initialUsers()
+
         newUser = {
             username: 'TestSubject',
             name: 'Test McTested',
@@ -35,7 +38,7 @@ describe('Adding users', () => {
 
         //Check that users in db has increased
         const usersInDb = await helper.usersInDb()
-        expect(usersInDb).toHaveLength(helper.initialUsers.length + 1);
+        expect(usersInDb).toHaveLength(initialUsers.length + 1);
 
         //Check that new user is in db
         const names = usersInDb.map(user => user.name);
@@ -57,6 +60,25 @@ describe('Adding users', () => {
                         .expect('Content-Type', /application\/json/);
                         
         expect(result.body.error).toContain('username or password not long enough')
+    });
+
+
+    test('Create root user with password', async () => {
+        const passwordHash = await bcrypt.hash('admin', 10);
+
+        const root = {
+            username: 'root',
+            name: 'Admin',
+            passwordHash: passwordHash
+        };
+
+        //Insert root user to database
+        await User.insertMany([root]);
+
+        //Check that database containes root user
+        const usersInDb = await helper.usersInDb()
+        const usernames = usersInDb.map(user => user.username);
+        expect(usernames).toContain('root');
     });
 });
 

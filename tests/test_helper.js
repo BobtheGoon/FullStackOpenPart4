@@ -1,5 +1,7 @@
 const Blog = require('../models/blog');
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
+
 
 const initialBlogs = [
     {
@@ -22,23 +24,38 @@ const initialBlogs = [
     },
 ];
 
-const initialUsers = [
-    {
-      username: 'GobtheBoon',
-      name: 'Martin Memer',
-      password: 'bananaynay'
-    },
-    {
-      username: 'FullStackBob',
-      name: 'Bobrosky Ross',
-      password: 'bobross!'
-    },
-    {
-      username: 'FullStacksKimmo',
-      name: 'Kimmo',
-      password: 'kimmokinkku123'
-    },
-  ];
+
+const hashPasswords = async () => {
+	const password1 = await bcrypt.hash('bananaynay', 10);
+	const password2 = await bcrypt.hash('bobross!', 10);
+	const password3 = await bcrypt.hash('kimmokinkku123', 10);
+
+	return [password1, password2, password3]
+};
+
+const initialUsers = async () =>{
+	const passwords = await hashPasswords()
+
+	const users = [
+		{
+		username: 'GobtheBoon',
+		name: 'Martin Memer',
+		passwordHash: passwords[0]
+		},
+		{
+		username: 'FullStackBob',
+		name: 'Bobrosky Ross',
+		passwordHash: passwords[1]
+		},
+		{
+		username: 'FullStacksKimmo',
+		name: 'Kimmo',
+		passwordHash: passwords[2]
+		},
+	];
+
+	return users
+}
 
 
 const usersInDb = async () => {
