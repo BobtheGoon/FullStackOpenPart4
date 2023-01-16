@@ -4,14 +4,14 @@ const User = require('../models/user');
 
 const jwt = require('jsonwebtoken');
 
-const extractToken = request => {
-    const authorization = request.get('authorization');
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-      return authorization.substring(7)
-    };
+// const extractToken = request => {
+//     const authorization = request.get('authorization');
+//     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+//       return authorization.substring(7)
+//     };
 
-    return null;
-};
+//     return null;
+// };
 
 //GET
 blogsRouter.get('/', async (request, response) => {
@@ -24,14 +24,16 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
     const body = request.body;
     //Get token from request and decode it
-    const token = extractToken(request);
+    const token = request.token
     const decodedToken = jwt.verify(token, process.env.SECRET);
 
     //Check validity of token
     if (!token || !decodedToken.id) {
         return response.status(401).json({ error: 'token missing or invalid' });
       }
-      const user = await User.findById(decodedToken.id);
+    const user = await User.findById(decodedToken.id);
+
+    console.log(user)  
     
     //Create new mongoose Blog object and add user as its owner
     const blog = new Blog({
