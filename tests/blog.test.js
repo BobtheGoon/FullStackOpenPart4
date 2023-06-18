@@ -75,6 +75,7 @@ describe('updating a post', () => {
 });
 
 
-afterAll(() => {
+afterAll(async () => {
+    await Blog.deleteMany({})
     mongoose.connection.close();
 });

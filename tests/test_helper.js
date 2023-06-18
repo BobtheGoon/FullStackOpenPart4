@@ -8,19 +8,19 @@ const initialBlogs = [
         title: 'All your computers are belong to us',
         author: 'Martin Memer',
         url: 'www.evil.com',
-        likes: 3
+        likes: 3,
     },
     {
         title: 'How to become a FullStackBob',
         author: 'Bobrosky Ross',
         url: 'www.twitch.com/bobross',
-        likes: 18
+        likes: 18,
     },
     {
         title: 'Crime dont pay, deving does',
         author: 'FullStacks Bob',
         url: 'www.howtomakemoney.com',
-        likes:1
+        likes:1,
     },
 ];
 
